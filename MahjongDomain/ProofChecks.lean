@@ -1,0 +1,18 @@
+module
+
+import MahjongDomain.Representation
+import Mathlib.Util.AssertNoSorry
+
+namespace MahjongDomain
+
+assert_no_sorry Tile.all_length
+assert_no_sorry Tile.index_injective
+assert_no_sorry Int37Index.tile_int37Index
+assert_no_sorry PhysicalTileId.tile_index
+assert_no_sorry PhysicalTileId.int37_capacity_count
+assert_no_sorry aggregateInt37_add
+assert_no_sorry aggregateInt37_total
+assert_no_sorry aggregateInt37_capacity
+assert_no_sorry aggregateInt37_le_four
+
+end MahjongDomain
