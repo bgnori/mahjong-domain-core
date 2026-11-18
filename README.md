@@ -13,8 +13,20 @@ It records shared terms together with their scope, assumptions, and Lean
 declarations. Client-specific terminology and differences remain in each
 client project's own documentation.
 
+## Import policy
+
+Do not use the umbrella `import Mathlib`. Each module should import only the
+specific Mathlib modules it needs. If several core modules share the same
+small set of imports, collect those imports in an internal curated
+`MahjongDomain.Prelude`; keep the public `MahjongDomain` root focused on
+re-exporting the core API, not on acting as a Mathlib umbrella.
+
+Consumers should import `MahjongDomain` or a specific domain module to use
+this library. They should import specific Mathlib modules directly only when
+their own code uses Mathlib APIs beyond the core's public interface.
+
 ```sh
-lake build
+MATHLIB_NO_CACHE_ON_UPDATE=1 lake build
 ```
 
 The initial repository scaffold does not yet contain extracted domain
