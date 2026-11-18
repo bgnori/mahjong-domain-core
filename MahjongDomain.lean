@@ -1,4 +1,6 @@
-import MahjongDomain.Tile
+module
+
+public import MahjongDomain.Tile
 
 /-!
 # Mahjong Domain Core

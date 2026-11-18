@@ -1,3 +1,5 @@
+module
+
 import MahjongDomain.Prelude
 
 namespace MahjongDomain
