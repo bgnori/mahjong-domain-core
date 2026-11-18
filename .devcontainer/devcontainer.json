@@ -1,0 +1,13 @@
+{
+  "name": "Mahjong Domain Core",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": ["leanprover.lean4"]
+    }
+  },
+  "remoteUser": "vscode"
+}

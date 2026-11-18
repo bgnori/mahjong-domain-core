@@ -32,6 +32,15 @@ MATHLIB_NO_CACHE_ON_UPDATE=1 lake build
 The initial shared type is `MahjongDomain.Tile`, with a stable 34-kind index.
 Further shared definitions and adapters will be added in small, verified steps.
 
+## Development container
+
+Open the repository in a VS Code Dev Container, or build the image from the
+repository root with `docker build -f .devcontainer/Dockerfile -t mahjong-domain-core-dev .`.
+The image installs the version from [`lean-toolchain`](lean-toolchain) at build
+time. Rebuild the image when the pin changes; new containers from the same
+image do not download Lean again. Lake dependencies are still resolved in
+the workspace.
+
 ## License
 
 MIT. See [`LICENSE`](LICENSE).
