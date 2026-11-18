@@ -29,8 +29,11 @@ their own code uses Mathlib APIs beyond the core's public interface.
 MATHLIB_NO_CACHE_ON_UPDATE=1 lake build
 ```
 
-The initial shared type is `MahjongDomain.Tile`, with a stable 34-kind index.
-Further shared definitions and adapters will be added in small, verified steps.
+The core defines `MahjongDomain.Tile` with a stable 34-kind index, bridges
+Tenhou's 136 physical IDs through the aka37 representation, and proves total,
+addition, and four-copy capacity preservation when aka37 counts are aggregated
+to normalized tile kinds. See [`docs/GLOSSARY.md`](docs/GLOSSARY.md) for the
+canonical terms and the scope of each representation.
 
 ## Development container
 
