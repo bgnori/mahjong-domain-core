@@ -1,6 +1,6 @@
 module
 
-import MahjongDomain.Prelude
+public import MahjongDomain.Prelude
 
 @[expose] public section
 

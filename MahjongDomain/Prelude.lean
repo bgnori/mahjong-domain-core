@@ -1,7 +1,8 @@
 module
 
 public import Mathlib.Data.Fin.Basic
-public import Mathlib.Data.Fintype.Basic
+public import Mathlib.Data.Fintype.Defs
+public import Mathlib.Data.Fintype.OfMap
 
 /-!
 # Mahjong Domain Prelude
