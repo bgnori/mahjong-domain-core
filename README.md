@@ -29,8 +29,8 @@ their own code uses Mathlib APIs beyond the core's public interface.
 MATHLIB_NO_CACHE_ON_UPDATE=1 lake build
 ```
 
-The initial repository scaffold does not yet contain extracted domain
-definitions. Shared code will be added in small, verified steps.
+The initial shared type is `MahjongDomain.Tile`, with a stable 34-kind index.
+Further shared definitions and adapters will be added in small, verified steps.
 
 ## License
 
