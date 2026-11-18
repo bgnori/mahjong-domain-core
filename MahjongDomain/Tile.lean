@@ -2,6 +2,8 @@ module
 
 import MahjongDomain.Prelude
 
+@[expose] public section
+
 namespace MahjongDomain
 
 /-- The three numbered suits, in stable man-pin-sou order. -/
