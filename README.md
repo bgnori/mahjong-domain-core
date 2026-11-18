@@ -32,8 +32,10 @@ MATHLIB_NO_CACHE_ON_UPDATE=1 lake build
 The core defines `MahjongDomain.Tile` with a stable 34-kind index, bridges
 Tenhou's 136 physical IDs through the aka37 representation, and proves total,
 addition, and four-copy capacity preservation when aka37 counts are aggregated
-to normalized tile kinds. See [`docs/GLOSSARY.md`](docs/GLOSSARY.md) for the
-canonical terms and the scope of each representation.
+to normalized tile kinds. It also provides witness-bearing pair, meld, kan
+occupancy, and standard-decomposition specifications that preserve component
+and tile-kind multiplicities. See [`docs/GLOSSARY.md`](docs/GLOSSARY.md) for
+the canonical terms and the scope of each representation.
 
 ## Development container
 

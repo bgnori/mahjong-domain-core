@@ -1,6 +1,7 @@
 module
 
 import MahjongDomain.Representation
+import MahjongDomain.Parts
 import Mathlib.Util.AssertNoSorry
 
 namespace MahjongDomain
@@ -14,5 +15,11 @@ assert_no_sorry aggregateInt37_add
 assert_no_sorry aggregateInt37_total
 assert_no_sorry aggregateInt37_capacity
 assert_no_sorry aggregateInt37_le_four
+assert_no_sorry Pair.tiles_card
+assert_no_sorry Meld.tiles_card
+assert_no_sorry Kan.occupiedTiles_card
+assert_no_sorry MeldList.counts_cons
+assert_no_sorry StandardDecomposition.counts_eq_parts
+assert_no_sorry standardCompletion_iff_parts
 
 end MahjongDomain

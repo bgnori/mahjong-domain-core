@@ -2,6 +2,7 @@ module
 
 public import MahjongDomain.Tile
 public import MahjongDomain.Representation
+public import MahjongDomain.Parts
 import MahjongDomain.ProofChecks
 
 /-!
