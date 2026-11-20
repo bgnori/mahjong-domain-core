@@ -38,7 +38,7 @@ inductive MentsuCandidate
 
 /-- The tile-kind multiset occupied by a standard-form meld candidate. -/
 def MentsuCandidate.tiles : MentsuCandidate → Multiset Tile
-  | .shuntsu shuntsu => shuntsu.tiles
+  | .shuntsu sequence => sequence.tiles
   | .koutsu tile => Multiset.replicate 3 tile
 
 /-- The tile-kind multiset occupied by a fixed kan; it is not a standard meld. -/
@@ -104,8 +104,7 @@ theorem Pair.counts_eq_pair_add_remaining (counts : TileCounts) (pair : Pair)
   · subst tile
     simp [Pair.remainingCounts, Pair.tiles]
     omega
-  · have hne : pair.tile ≠ tile := Ne.symm htile
-    simp [Pair.remainingCounts, Pair.tiles, hne]
+  · simp [Pair.remainingCounts, Pair.tiles, htile]
 
 theorem MentsuCandidateList.counts_cons (candidate : MentsuCandidate)
     (candidates : List MentsuCandidate) :
