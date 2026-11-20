@@ -10,6 +10,8 @@ assert_no_sorry Tile.all_length
 assert_no_sorry Tile.index_injective
 assert_no_sorry Int37Index.tile_int37Index
 assert_no_sorry PhysicalTileId.tile_index
+assert_no_sorry PhysicalTileId.int34Index_val
+assert_no_sorry PhysicalTileId.int34Index_eq_int37Index
 assert_no_sorry PhysicalTileId.int37_capacity_count
 assert_no_sorry aggregateInt37_add
 assert_no_sorry aggregateInt37_total

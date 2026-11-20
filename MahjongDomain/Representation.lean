@@ -17,8 +17,14 @@ abbrev PhysicalTileId := Fin 136
 /-- An aka37 slot; red fives have separate slots from ordinary fives. -/
 abbrev Int37Index := Fin 37
 
+/-- A normalized Int34 tile-kind index. -/
+abbrev Int34Index := Fin 34
+
 /-- Signed counts in the aka37 representation. -/
 abbrev Int37Counts := Int37Index → Int
+
+/-- Signed counts in the normalized Int34 representation. -/
+abbrev Int34Counts := Int34Index → Int
 
 /-- The aka37 slot for the normalized tile, choosing the ordinary five slot. -/
 def Tile.int37Index : Tile → Int37Index
@@ -79,6 +85,28 @@ def PhysicalTileId.int37Index (id : PhysicalTileId) : Int37Index :=
 def PhysicalTileId.tile (id : PhysicalTileId) : Tile :=
   id.int37Index.tile
 
+/-- Map a Tenhou physical tile ID directly to its normalized Int34 index. -/
+def PhysicalTileId.int34Index (id : PhysicalTileId) : Int34Index :=
+  ⟨id.val / 4, by
+    have hkind : id.val / 4 < 34 := by omega
+    exact hkind⟩
+
+/--
+Convert valid Tenhou physical tile IDs to signed Int37 counts. Hand length and
+physical-ID uniqueness are caller responsibilities.
+-/
+def Int37Counts.ofTenhou (ids : List PhysicalTileId) : Int37Counts :=
+  fun index =>
+    Int.ofNat (ids.countP fun id => decide (id.int37Index = index))
+
+/--
+Convert valid Tenhou physical tile IDs to signed Int34 counts. Hand length and
+physical-ID uniqueness are caller responsibilities.
+-/
+def Int34Counts.ofTenhou (ids : List PhysicalTileId) : Int34Counts :=
+  fun index =>
+    Int.ofNat (ids.countP fun id => decide (id.int34Index = index))
+
 /-- Aggregate signed aka37 counts by normalized 34-kind tile. -/
 def aggregateInt37 (counts : Int37Counts) : Tile → Int :=
   fun tile => ∑ index : Int37Index, if tile = index.tile then counts index else 0
@@ -100,6 +128,15 @@ theorem Int37Index.tile_int37Index (tile : Tile) :
 theorem PhysicalTileId.tile_index (id : PhysicalTileId) :
     id.tile.index.val = id.val / 4 := by
   fin_cases id <;> decide
+
+theorem PhysicalTileId.int34Index_val (id : PhysicalTileId) :
+    id.int34Index.val = id.val / 4 := by
+  rfl
+
+theorem PhysicalTileId.int34Index_eq_int37Index (id : PhysicalTileId) :
+    id.int34Index = id.int37Index.tile.index := by
+  apply Fin.ext
+  exact (PhysicalTileId.tile_index id).symm
 
 theorem aggregateInt37_add (left right : Int37Counts) :
     aggregateInt37 (fun index => left index + right index) =
@@ -140,5 +177,30 @@ theorem PhysicalTileId.int37_capacity_count (index : Int37Index) :
     (∑ id : PhysicalTileId, if id.int37Index = index then (1 : Nat) else 0) =
       index.capacity := by
   fin_cases index <;> decide
+
+example :
+    Int37Counts.ofTenhou
+        [⟨16, by decide⟩, ⟨17, by decide⟩, ⟨52, by decide⟩] ⟨0, by decide⟩ = 1 := by
+  native_decide
+
+example :
+    Int37Counts.ofTenhou
+        [⟨16, by decide⟩, ⟨17, by decide⟩, ⟨52, by decide⟩] ⟨5, by decide⟩ = 1 := by
+  native_decide
+
+example :
+    Int37Counts.ofTenhou
+        [⟨16, by decide⟩, ⟨17, by decide⟩, ⟨52, by decide⟩] ⟨10, by decide⟩ = 1 := by
+  native_decide
+
+example :
+    Int34Counts.ofTenhou
+        [⟨16, by decide⟩, ⟨17, by decide⟩, ⟨52, by decide⟩] ⟨4, by decide⟩ = 2 := by
+  native_decide
+
+example :
+    Int34Counts.ofTenhou
+        [⟨16, by decide⟩, ⟨17, by decide⟩, ⟨52, by decide⟩] ⟨13, by decide⟩ = 1 := by
+  native_decide
 
 end MahjongDomain
