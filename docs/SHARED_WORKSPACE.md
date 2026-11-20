@@ -81,6 +81,35 @@ coreだけでなく両consumerのビルドと対応定理も確認してくだ�
 の組み合わせを明示して再現性を確保します。Leanとmathlibの版は各packageの
 toolchain・Lake設定で揃えます。
 
+## CI: Coreのmainに追従する
+
+Coreが活発に変わる間は、consumerのCIでCoreの`main`をcheckoutします。
+ローカルのpath依存はそのままなので、ローカルでは隣のcheckout、CIでは最新の
+`main`が使われます。Coreの更新を各consumerへ取り込むための依存更新PRは不要です。
+ただし、ローカルのcheckoutが自動で更新されるわけではありません。
+
+Coreの[CI](../.github/workflows/checks.yml)はpush、pull request、手動実行に対応し、
+次の3ジョブを独立して実行します。1つが失敗しても他のジョブは中断しません。
+
+- 変更中のCore単体: `lake build MahjongDomain`
+- 変更中のCore + `mahjong-formalization`の`main`: `lake build Mahjong MahjongTests`
+- 変更中のCore + `shanten`の`main`: `lake build Shanten`
+
+Coreのpull requestではGitHubのマージ候補を検証します。consumer側の別workflowを
+起動するのではなく、Coreのworkflow内でconsumerをビルドするため、結果はCoreの
+変更に直接表示され、リポジトリ間の起動用tokenも不要です。全列挙レポートの生成や
+定期実行は追加しません。既存のshanten側の共有回帰CIは接続packageなどの検証を維持し、
+Coreと分類側のcheckoutをともに`main`にします。
+
+追従先の`main`は変わるため、Leanジョブは実際に検証した各リポジトリのcommit SHAを
+実行概要に記録します。Coreだけを変更してもconsumer側の結果がCoreのCIに現れますが、
+consumerリポジトリ自身に新しいCI実行が作られるわけではありません。
+
+破壊的変更はconsumerの`main`との互換性検証を失敗させます。連動した修正が必要なら、
+各リポジトリのPRを関連付け、取り込み順と一時的なCI失敗を明示して扱います。
+Coreの変更が減った段階で、consumerの依存を検証済みSHAへ固定し、Core側の先行
+互換性検証を残す方針に移行できます。
+
 ## 共有範囲の判断
 
 - 牌の同一性、牌数、共通部品、標準形のように、複数consumerで意味が変わらない
