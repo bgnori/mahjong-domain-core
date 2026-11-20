@@ -48,7 +48,9 @@ repository root with `docker build -f .devcontainer/Dockerfile -t mahjong-domain
 The image installs the version from [`lean-toolchain`](lean-toolchain) at build
 time. Rebuild the image when the pin changes; new containers from the same
 image do not download Lean again. Lake dependencies are still resolved in
-the workspace.
+the workspace. The container shares the host's `~/.cache/mathlib` with the
+other Mahjong Dev Containers, so downloaded mathlib artifacts are reused
+across container recreations on the same host.
 
 ## License
 
