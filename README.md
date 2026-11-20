@@ -13,6 +13,10 @@ It records shared terms together with their scope, assumptions, and Lean
 declarations. Client-specific terminology and differences remain in each
 client project's own documentation.
 
+The rationale and workflow for sharing this domain across the sibling
+`mahjong-formalization` and `shanten` repositories are documented in
+[`docs/SHARED_WORKSPACE.md`](docs/SHARED_WORKSPACE.md).
+
 ## Import policy
 
 Do not use the umbrella `import Mathlib`. Each module should import only the
