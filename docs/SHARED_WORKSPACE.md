@@ -1,6 +1,6 @@
 # Shared domain across the workspace / workspaceでのドメイン共有
 
-この文書は、`mahjong-domain-core`、`mahjong-formalization`、`shanten`を
+この文書は、`mahjong-domain-core`、`mahjong-wait-classification`、`mahjong-shanten-calculation`を
 別々のGitリポジトリとして保ちながら、共有ドメインを共同で開発する方法と
 その利点を説明します。共有用語の定義そのものは
 [`GLOSSARY.md`](GLOSSARY.md)を参照してください。
@@ -18,8 +18,8 @@
 ### 定義とアルゴリズムの責務を分ける
 
 coreには複数のプロジェクトが必要とする安定したドメイン部品を置きます。
-待ち分類・分解分類は`mahjong-formalization`に、向聴数の探索と評価は
-`shanten`に残します。これにより、共通の数学的対象は共有しつつ、各プロジェクト
+待ち分類・分解分類は`mahjong-wait-classification`に、向聴数の探索と評価は
+`mahjong-shanten-calculation`に残します。これにより、共通の数学的対象は共有しつつ、各プロジェクト
 固有の問題設定、公開API、計算方法はそれぞれ独立して進化できます。
 
 ### 移行中の型も対応関係を明示できる
@@ -27,8 +27,8 @@ coreには複数のプロジェクトが必要とする安定したドメイン�
 利用側が既存の型やAPIをすぐに捨てる必要はありません。各プロジェクトの
 ローカルな型からcoreの型への変換をadapterに集め、往復変換や牌数保存などの
 対応を定理として示せます。たとえば両consumerは既存の牌表現を保ちながら
-coreの牌表現へ接続し、`mahjong-formalization`は牌・対子・面子の対応を、
-`shanten`は牌・面子・標準形完成仕様との対応を検証します。
+coreの牌表現へ接続し、`mahjong-wait-classification`は牌・対子・面子の対応を、
+`mahjong-shanten-calculation`は牌・面子・標準形完成仕様との対応を検証します。
 この境界により、共有部品を段階的に導入できます。
 
 ## workspaceの構成
@@ -41,8 +41,8 @@ VS Codeのmulti-root workspaceは3つを一度に開くためのもので、単�
 mahjong/
 ├── mahjong.code-workspace
 ├── mahjong-domain-core/
-├── mahjong-formalization/
-└── shanten/
+├── mahjong-wait-classification/
+└── mahjong-shanten-calculation/
 ```
 
 両consumerの`lakefile.lean`は、Lakeのpath dependencyとして
@@ -68,10 +68,10 @@ mahjong/
 # mahjong-domain-core/
 MATHLIB_NO_CACHE_ON_UPDATE=1 lake build
 
-# mahjong-formalization/
+# mahjong-wait-classification/
 lake build
 
-# shanten/
+# mahjong-shanten-calculation/
 lake build
 ```
 
@@ -92,14 +92,14 @@ Coreの[CI](../.github/workflows/checks.yml)はpush、pull request、手動実�
 次の3ジョブを独立して実行します。1つが失敗しても他のジョブは中断しません。
 
 - 変更中のCore単体: `lake build MahjongDomain`
-- 変更中のCore + `mahjong-formalization`の`main`: `lake build Mahjong MahjongTests`
-- 変更中のCore + `shanten`の`main`: `lake build Shanten`
+- 変更中のCore + `mahjong-wait-classification`の`main`: `lake build Mahjong MahjongTests`
+- 変更中のCore + `mahjong-shanten-calculation`の`main`: `lake build Shanten`
 
 Coreのpull requestではGitHubのマージ候補を検証します。consumer側の別workflowを
 起動するのではなく、Coreのworkflow内でconsumerをビルドするため、結果はCoreの
 変更に直接表示され、リポジトリ間の起動用tokenも不要です。全列挙レポートの生成や
-定期実行は追加しません。既存のshanten側の共有回帰CIは接続packageなどの検証を維持し、
-Coreと分類側のcheckoutをともに`main`にします。
+定期実行は追加しません。既存のシャンテン計算側の共有回帰CIは接続packageなどの検証を維持し、
+Coreと待ち分類側のcheckoutをともに`main`にします。
 
 追従先の`main`は変わるため、Leanジョブは実際に検証した各リポジトリのcommit SHAを
 実行概要に記録します。Coreだけを変更してもconsumer側の結果がCoreのCIに現れますが、

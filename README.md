@@ -14,7 +14,7 @@ declarations. Client-specific terminology and differences remain in each
 client project's own documentation.
 
 The rationale and workflow for sharing this domain across the sibling
-`mahjong-formalization` and `shanten` repositories are documented in
+`mahjong-wait-classification` and `mahjong-shanten-calculation` repositories are documented in
 [`docs/SHARED_WORKSPACE.md`](docs/SHARED_WORKSPACE.md).
 
 ## Import policy

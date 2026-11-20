@@ -24,10 +24,10 @@ jobs:
           - package: mahjong-domain-core
             sources: MahjongDomain
             targets: MahjongDomain
-          - package: mahjong-formalization
+          - package: mahjong-wait-classification
             sources: Mahjong MahjongTests ../mahjong-domain-core/MahjongDomain
             targets: Mahjong MahjongTests
-          - package: shanten
+          - package: mahjong-shanten-calculation
             sources: Shanten ../mahjong-domain-core/MahjongDomain
             targets: Shanten
     env:
@@ -50,7 +50,7 @@ jobs:
           path: ${{ matrix.package }}
       - name: Record tested revisions
         run: |
-          for repository in mahjong-domain-core mahjong-formalization shanten; do
+          for repository in mahjong-domain-core mahjong-wait-classification mahjong-shanten-calculation; do
             if [ -d "../$repository/.git" ]; then
               printf '%s: %s\n' "$repository" "$(git -C "../$repository" rev-parse HEAD)" \
                 >> "$GITHUB_STEP_SUMMARY"
