@@ -83,4 +83,67 @@ theorem index_injective : Function.Injective index := by
 
 end Tile
 
+/-- A ready-to-use display format for a normalized tile kind. -/
+inductive TileFormat
+  | unicode
+  | mpsz
+  deriving BEq, DecidableEq, Repr
+
+namespace Tile
+
+/-- Render a normalized tile kind as a Mahjong glyph or as mpsz notation. -/
+def format (output : TileFormat) : Tile → String
+  | .suited suit rank =>
+      match output with
+      | .unicode =>
+          let offset :=
+            match suit with
+            | .man => 0x1F007
+            | .pin => 0x1F019
+            | .sou => 0x1F010
+          String.singleton (Char.ofNat (offset + rank.val))
+      | .mpsz =>
+          let suffix :=
+            match suit with
+            | .man => "m"
+            | .pin => "p"
+            | .sou => "s"
+          s!"{rank.val + 1}{suffix}"
+  | .honor rank =>
+      match output with
+      | .unicode =>
+          let codepoint :=
+            match rank.val with
+            | 0 => 0x1F000
+            | 1 => 0x1F001
+            | 2 => 0x1F002
+            | 3 => 0x1F003
+            | 4 => 0x1F006
+            | 5 => 0x1F005
+            | _ => 0x1F004
+          String.singleton (Char.ofNat codepoint)
+      | .mpsz => s!"{rank.val + 1}z"
+
+example :
+    (Suit.all.map fun suit =>
+      format .unicode (.suited suit ⟨0, by decide⟩)) = ["🀇", "🀙", "🀐"] := by
+  native_decide
+
+example :
+    (List.ofFn fun rank : Honor => format .unicode (.honor rank)) =
+      ["🀀", "🀁", "🀂", "🀃", "🀆", "🀅", "🀄"] := by
+  native_decide
+
+example :
+    (Suit.all.map fun suit =>
+      format .mpsz (.suited suit ⟨8, by decide⟩)) = ["9m", "9p", "9s"] := by
+  native_decide
+
+example :
+    (List.ofFn fun rank : Honor => format .mpsz (.honor rank)) =
+      ["1z", "2z", "3z", "4z", "5z", "6z", "7z"] := by
+  native_decide
+
+end Tile
+
 end MahjongDomain

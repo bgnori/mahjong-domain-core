@@ -1,9 +1,10 @@
 # Mahjong Domain Core
 
-A small shared Lean 4 library for Mahjong tile representations, capacities,
-melds, and standard-hand specifications. The core is intended to provide
-common definitions and verified properties to independent Mahjong projects;
-it is not a shanten, wait-classification, or score-calculation engine.
+A small shared Lean 4 library for Mahjong tile representations, ready-to-use
+notation, capacities, melds, and standard-hand specifications. The core is
+intended to provide common definitions and verified properties to independent
+Mahjong projects; it is not a shanten, wait-classification, or score-calculation
+engine.
 
 The public Lean namespace and root module are `MahjongDomain`. The package
 uses Lean and mathlib `v4.35.0`.
@@ -38,8 +39,10 @@ Tenhou's 136 physical IDs through the aka37 representation, and proves total,
 addition, and four-copy capacity preservation when aka37 counts are aggregated
 to normalized tile kinds. It also provides witness-bearing pair, meld, kan
 occupancy, and standard-decomposition specifications that preserve component
-and tile-kind multiplicities. See [`docs/GLOSSARY.md`](docs/GLOSSARY.md) for
-the canonical terms and the scope of each representation.
+and tile-kind multiplicities. `MahjongDomain.Tile.format` renders normalized
+tiles as Unicode glyphs or mpsz notation. See
+[`docs/GLOSSARY.md`](docs/GLOSSARY.md) for the canonical terms and the scope
+of each representation.
 
 ## Development container
 
