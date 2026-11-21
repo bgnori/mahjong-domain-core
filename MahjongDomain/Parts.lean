@@ -2,6 +2,9 @@ module
 
 public import MahjongDomain.Tile
 public import Mathlib.Data.Multiset.Basic
+public import Mathlib.Data.Fintype.Sigma
+public import Mathlib.Data.Fintype.Sum
+import Mathlib.Tactic.DeriveFintype
 
 @[expose] public section
 
@@ -20,7 +23,7 @@ def Pair.tiles (pair : Pair) : Multiset Tile :=
 structure Shuntsu where
   suit : Suit
   start : Fin 7
-  deriving DecidableEq
+  deriving DecidableEq, Fintype
 
 /-- The tile-kind multiset occupied by a suited sequence. -/
 def Shuntsu.tiles (shuntsu : Shuntsu) : Multiset Tile :=
@@ -34,7 +37,7 @@ def Shuntsu.tiles (shuntsu : Shuntsu) : Multiset Tile :=
 inductive MentsuCandidate
   | shuntsu (shuntsu : Shuntsu)
   | koutsu (tile : Tile)
-  deriving DecidableEq
+  deriving DecidableEq, Fintype
 
 /-- The tile-kind multiset occupied by a standard-form meld candidate. -/
 def MentsuCandidate.tiles : MentsuCandidate → Multiset Tile
