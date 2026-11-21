@@ -9,6 +9,8 @@ documentation and should link here rather than duplicate shared definitions.
 適用範囲、前提、および対応するLean識別子を記録します。利用側固有の意味や差分は
 各プロジェクトの文書に記し、共通定義を複製せず本書を参照してください。
 
+## Shared terms / 共通用語
+
 | English term | 日本語 | Definition and scope / 定義・対象範囲 | Preconditions / 前提 | Lean declaration |
 |---|---|---|---|---|
 | Tile kind | 牌種 | One of the 34 normalized kinds. Red fives are not separate kinds. / 正規化後の34種類。赤5は独立した牌種ではありません。 | Numbered ranks are zero-based; honors follow east, south, west, north, white, green, red. / 数牌ランクは0始まり、字牌は東南西北白發中の順です。 | `MahjongDomain.Tile`, `MahjongDomain.Tile.index` |
