@@ -29,3 +29,12 @@ documentation and should link here rather than duplicate shared definitions.
 | Kan occupancy | 槓占有 | The four tile copies occupied by a fixed kan, while the kan counts as one fixed meld at the client boundary. / 固定槓が占有する同一牌種4枚。利用側の面子数では1個です。 | Occupancy is separate from the concealed standard-meld type. / 門前通常面子型とは別の表現です。 | `Kan.occupiedTiles` |
 | Standard decomposition | 通常形分解 | One chosen pair and an ordered list of standard-form mentsu candidates, preserving repeated equal candidates. / 選択した雀頭1組と順序付き面子候補リスト。同じ候補の反復も保持します。 | The represented count vector is defined by tile-kind multiplicity, not list order. / 対応するカウントは列順ではなく牌種ごとの多重度で定まります。 | `StandardDecomposition`, `StandardDecomposition.tiles`, `StandardDecomposition.counts` |
 | Standard completion | 通常形完成仕様 | A witness-bearing standard decomposition with exactly the requested number of melds and the specified tile-kind counts. / 指定数の面子を持ち、指定カウントに一致する証人付き通常形分解です。 | The decomposition witness is retained; distinct decompositions of equal counts are not collapsed. / 分解証人を保持し、同じカウントの異なる分解を潰しません。 | `StandardCompletion`, `standardCompletion_iff_parts` |
+
+`Pair.orderedTiles`, `Shuntsu.orderedTiles`, and `MentsuCandidate.orderedTiles`
+are the canonical tile-kind lists for these parts; a sequence is ordered by
+ascending rank. Their `tiles` multisets are obtained from those lists by
+`Multiset.ofList`. The rank operations are `ShuntsuStart.firstRank`,
+`middleRank`, and `lastRank`.
+
+各部品の`orderedTiles`は共有牌種の列であり、順子はランク昇順です。`tiles`は
+その列から`Multiset.ofList`で得ます。順子の各ランクは`ShuntsuStart`で得られます。

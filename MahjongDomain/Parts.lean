@@ -15,9 +15,29 @@ structure Pair where
   tile : Tile
   deriving DecidableEq
 
+/-- The two tile kinds of a pair. -/
+def Pair.orderedTiles (pair : Pair) : List Tile :=
+  [pair.tile, pair.tile]
+
 /-- The tile-kind multiset occupied by a pair. -/
 def Pair.tiles (pair : Pair) : Multiset Tile :=
-  Multiset.replicate 2 pair.tile
+  Multiset.ofList pair.orderedTiles
+
+theorem Pair.tiles_eq_replicate (pair : Pair) :
+    pair.tiles = Multiset.replicate 2 pair.tile := rfl
+
+namespace ShuntsuStart
+
+/-- The first rank in a sequence beginning at this zero-based position. -/
+def firstRank (start : Fin 7) : Rank := ⟨start.val, by omega⟩
+
+/-- The middle rank in a sequence beginning at this zero-based position. -/
+def middleRank (start : Fin 7) : Rank := ⟨start.val + 1, by omega⟩
+
+/-- The last rank in a sequence beginning at this zero-based position. -/
+def lastRank (start : Fin 7) : Rank := ⟨start.val + 2, by omega⟩
+
+end ShuntsuStart
 
 /-- A suited sequence of three consecutive numbered tile kinds. -/
 structure Shuntsu where
@@ -25,13 +45,16 @@ structure Shuntsu where
   start : Fin 7
   deriving DecidableEq, Fintype
 
+/-- Sequence tile kinds in ascending rank order. -/
+def Shuntsu.orderedTiles (shuntsu : Shuntsu) : List Tile :=
+  [ Tile.suited shuntsu.suit (ShuntsuStart.firstRank shuntsu.start)
+  , Tile.suited shuntsu.suit (ShuntsuStart.middleRank shuntsu.start)
+  , Tile.suited shuntsu.suit (ShuntsuStart.lastRank shuntsu.start)
+  ]
+
 /-- The tile-kind multiset occupied by a suited sequence. -/
 def Shuntsu.tiles (shuntsu : Shuntsu) : Multiset Tile :=
-  Multiset.ofList
-    [ Tile.suited shuntsu.suit ⟨shuntsu.start.val, by omega⟩
-    , Tile.suited shuntsu.suit ⟨shuntsu.start.val + 1, by omega⟩
-    , Tile.suited shuntsu.suit ⟨shuntsu.start.val + 2, by omega⟩
-    ]
+  Multiset.ofList shuntsu.orderedTiles
 
 /-- A standard-form meld candidate: a suited sequence or a triplet. -/
 inductive MentsuCandidate
@@ -39,10 +62,14 @@ inductive MentsuCandidate
   | koutsu (tile : Tile)
   deriving DecidableEq, Fintype
 
+/-- Meld tile kinds, with a sequence in ascending rank order. -/
+def MentsuCandidate.orderedTiles : MentsuCandidate → List Tile
+  | .shuntsu sequence => sequence.orderedTiles
+  | .koutsu tile => [tile, tile, tile]
+
 /-- The tile-kind multiset occupied by a standard-form meld candidate. -/
-def MentsuCandidate.tiles : MentsuCandidate → Multiset Tile
-  | .shuntsu sequence => sequence.tiles
-  | .koutsu tile => Multiset.replicate 3 tile
+def MentsuCandidate.tiles (candidate : MentsuCandidate) : Multiset Tile :=
+  Multiset.ofList candidate.orderedTiles
 
 /-- The tile-kind multiset occupied by a fixed kan; it is not a standard meld. -/
 def Kan.occupiedTiles (tile : Tile) : Multiset Tile :=
@@ -87,13 +114,13 @@ def StandardCompletion (candidateCount : Nat) (counts : TileCounts) : Prop :=
     decomposition.mentsuCandidates.length = candidateCount ∧ decomposition.counts = counts
 
 theorem Pair.tiles_card (pair : Pair) : pair.tiles.card = 2 := by
-  simp [Pair.tiles]
+  simp [Pair.tiles, Pair.orderedTiles]
 
 theorem MentsuCandidate.tiles_card (candidate : MentsuCandidate) :
     candidate.tiles.card = 3 := by
   cases candidate with
-  | shuntsu shuntsu => simp [MentsuCandidate.tiles, Shuntsu.tiles]
-  | koutsu tile => simp [MentsuCandidate.tiles]
+  | shuntsu shuntsu => simp [MentsuCandidate.tiles, MentsuCandidate.orderedTiles, Shuntsu.orderedTiles]
+  | koutsu tile => simp [MentsuCandidate.tiles, MentsuCandidate.orderedTiles]
 
 theorem Kan.occupiedTiles_card (tile : Tile) :
     (Kan.occupiedTiles tile).card = 4 := by
@@ -105,9 +132,9 @@ theorem Pair.counts_eq_pair_add_remaining (counts : TileCounts) (pair : Pair)
   funext tile
   by_cases htile : tile = pair.tile
   · subst tile
-    simp [Pair.remainingCounts, Pair.tiles]
+    simp [Pair.remainingCounts, Pair.tiles, Pair.orderedTiles]
     omega
-  · simp [Pair.remainingCounts, Pair.tiles, htile]
+  · simp [Pair.remainingCounts, Pair.tiles, Pair.orderedTiles, htile]
 
 theorem MentsuCandidateList.counts_cons (candidate : MentsuCandidate)
     (candidates : List MentsuCandidate) :
