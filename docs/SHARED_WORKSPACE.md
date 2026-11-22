@@ -34,8 +34,11 @@ coreの牌表現へ接続し、`mahjong-wait-classification`は牌・対子・�
 ## workspaceの構成
 
 各リポジトリは独立したGit履歴、Lean package、依存マニフェストを保ちます。
-VS Codeのmulti-root workspaceは3つを一度に開くためのもので、単一のGit
-リポジトリや単一のLake packageに統合するものではありません。
+`mahjong.code-workspace`の`folders`は親ディレクトリの`.`を指定しているため、
+VS Codeでは親ディレクトリを1つのworkspace folderとして開きます。これはmulti-root
+workspaceではなく、3つのプロジェクトリポジトリを親ディレクトリ配下で一緒に扱う
+ための構成です。各プロジェクトは独立したGitリポジトリとLean packageのままであり、
+統合されるわけではありません。各リポジトリは単独で開いて開発することもできます。
 
 ```text
 mahjong/
