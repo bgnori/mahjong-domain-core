@@ -2,6 +2,7 @@ module
 
 import MahjongDomain.Representation
 import MahjongDomain.Parts
+import MahjongDomain.Orphans
 import Mathlib.Util.AssertNoSorry
 
 namespace MahjongDomain
@@ -9,6 +10,10 @@ namespace MahjongDomain
 assert_no_sorry Tile.all_length
 assert_no_sorry Tile.mem_all
 assert_no_sorry Tile.index_injective
+assert_no_sorry mem_orphanKinds
+assert_no_sorry orphanKinds_card
+assert_no_sorry orphanTiles_count
+assert_no_sorry orphanTiles_card
 assert_no_sorry Int37Index.tile_int37Index
 assert_no_sorry PhysicalTileId.tile_index
 assert_no_sorry PhysicalTileId.int34Index_val
@@ -21,6 +26,8 @@ assert_no_sorry aggregateInt37_le_four
 assert_no_sorry Pair.tiles_eq_replicate
 assert_no_sorry Pair.tiles_card
 assert_no_sorry MentsuCandidate.tiles_card
+assert_no_sorry MentsuCandidateList.tiles_card
+assert_no_sorry TileCounts.ofMultiset_sum_eq_card
 assert_no_sorry Kan.occupiedTiles_card
 assert_no_sorry Pair.counts_eq_pair_add_remaining
 assert_no_sorry MentsuCandidateList.counts_cons
@@ -48,5 +55,30 @@ example (sequence : Shuntsu) :
 example (pair : Pair) : Multiset.ofList pair.orderedTiles = pair.tiles := rfl
 example (candidate : MentsuCandidate) :
     Multiset.ofList candidate.orderedTiles = candidate.tiles := rfl
+
+example (suit : Suit) (rank : Rank) :
+    Tile.suited suit rank ∈ orphanKinds ↔ rank.val = 0 ∨ rank.val = 8 :=
+  mem_orphanKinds _
+
+example (honor : Honor) : Tile.honor honor ∈ orphanKinds :=
+  (mem_orphanKinds _).mpr trivial
+
+example (tile : Tile) :
+    TileCounts.ofMultiset (Multiset.replicate 4 tile) tile = 4 := by
+  simp [TileCounts.ofMultiset]
+
+example (tile : Tile) : TileCounts.ofList [tile, tile, tile, tile] tile = 4 := by
+  simp [TileCounts.ofList, TileCounts.ofMultiset]
+
+example : (∑ tile : Tile, TileCounts.ofMultiset 0 tile) = 0 := by
+  rw [TileCounts.ofMultiset_sum_eq_card]
+  rfl
+
+example (candidate : MentsuCandidate) :
+    (MentsuCandidateList.tiles [candidate, candidate]).card = 6 := by
+  rw [MentsuCandidateList.tiles_card]
+  rfl
+
+example : (MentsuCandidateList.tiles []).card = 0 := rfl
 
 end MahjongDomain

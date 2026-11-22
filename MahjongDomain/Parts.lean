@@ -4,6 +4,7 @@ public import MahjongDomain.Tile
 public import Mathlib.Data.Multiset.Basic
 public import Mathlib.Data.Fintype.Sigma
 public import Mathlib.Data.Fintype.Sum
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Tactic.DeriveFintype
 
 @[expose] public section
@@ -156,6 +157,23 @@ theorem MentsuCandidate.tiles_card (candidate : MentsuCandidate) :
   cases candidate with
   | shuntsu shuntsu => simp [MentsuCandidate.tiles, MentsuCandidate.orderedTiles, Shuntsu.orderedTiles]
   | koutsu tile => simp [MentsuCandidate.tiles, MentsuCandidate.orderedTiles]
+
+theorem MentsuCandidateList.tiles_card (candidates : List MentsuCandidate) :
+    (MentsuCandidateList.tiles candidates).card = 3 * candidates.length := by
+  induction candidates with
+  | nil => rfl
+  | cons candidate rest ih =>
+      change (candidate.tiles + MentsuCandidateList.tiles rest).card =
+        3 * (rest.length + 1)
+      rw [Multiset.card_add, MentsuCandidate.tiles_card, ih]
+      omega
+
+theorem TileCounts.ofMultiset_sum_eq_card (tiles : Multiset Tile) :
+    (∑ tile : Tile, TileCounts.ofMultiset tiles tile) = tiles.card := by
+  induction tiles using Multiset.induction_on with
+  | empty => simp [TileCounts.ofMultiset]
+  | @cons tile tiles ih =>
+      simp [TileCounts.ofMultiset, ih, Finset.sum_add_distrib]
 
 theorem Kan.occupiedTiles_card (tile : Tile) :
     (Kan.occupiedTiles tile).card = 4 := by
