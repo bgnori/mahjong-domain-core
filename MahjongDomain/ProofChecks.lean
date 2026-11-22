@@ -7,6 +7,7 @@ import Mathlib.Util.AssertNoSorry
 namespace MahjongDomain
 
 assert_no_sorry Tile.all_length
+assert_no_sorry Tile.mem_all
 assert_no_sorry Tile.index_injective
 assert_no_sorry Int37Index.tile_int37Index
 assert_no_sorry PhysicalTileId.tile_index
@@ -23,6 +24,10 @@ assert_no_sorry MentsuCandidate.tiles_card
 assert_no_sorry Kan.occupiedTiles_card
 assert_no_sorry Pair.counts_eq_pair_add_remaining
 assert_no_sorry MentsuCandidateList.counts_cons
+assert_no_sorry TileCounts.ofList_apply
+assert_no_sorry MentsuCandidateList.counts_eq_list_count
+assert_no_sorry MentsuCandidate.orderedTiles_length
+assert_no_sorry MentsuCandidateList.flatMap_orderedTiles_length
 assert_no_sorry StandardDecomposition.counts_eq_parts
 assert_no_sorry standardCompletion_iff_parts
 

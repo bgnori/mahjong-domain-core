@@ -30,6 +30,18 @@ abbrev Rank := Fin 9
 /-- Honor kinds use east, south, west, north, white, green, red order. -/
 abbrev Honor := Fin 7
 
+namespace Honor
+
+def east : Honor := 0
+def south : Honor := 1
+def west : Honor := 2
+def north : Honor := 3
+def white : Honor := 4
+def green : Honor := 5
+def red : Honor := 6
+
+end Honor
+
 /-- A normalized tile kind; red fives share their numbered tile kind. -/
 inductive Tile
   | suited (suit : Suit) (rank : Rank)
@@ -41,25 +53,30 @@ abbrev TileCounts := Tile → Nat
 
 namespace Tile
 
+/-- Construct suited tile kinds from an ordered list of ranks. -/
+def suitedTiles (suit : Suit) (ranks : List Rank) : List Tile :=
+  ranks.map (.suited suit)
+
 /-- All 34 tile kinds in stable suit-major order followed by honors. -/
 def all : List Tile :=
   (Suit.all.flatMap fun suit =>
     List.ofFn fun rank : Rank => Tile.suited suit rank) ++
   List.ofFn fun rank : Honor => Tile.honor rank
 
+theorem mem_all (tile : Tile) : tile ∈ all := by
+  cases tile with
+  | suited suit rank =>
+      simp only [all, List.mem_append, List.mem_flatMap]
+      left
+      exact ⟨suit, by cases suit <;> simp [Suit.all],
+        List.mem_ofFn.mpr ⟨rank, rfl⟩⟩
+  | honor rank =>
+      simp only [all, List.mem_append]
+      right
+      exact List.mem_ofFn.mpr ⟨rank, rfl⟩
+
 instance : Fintype Tile :=
-  Fintype.ofList all (by
-    intro tile
-    cases tile with
-    | suited suit rank =>
-        simp only [all, List.mem_append, List.mem_flatMap]
-        left
-        exact ⟨suit, by cases suit <;> simp [Suit.all],
-          List.mem_ofFn.mpr ⟨rank, rfl⟩⟩
-    | honor rank =>
-        simp only [all, List.mem_append]
-        right
-        exact List.mem_ofFn.mpr ⟨rank, rfl⟩)
+  Fintype.ofList all mem_all
 
 /-- Stable 0-based index: numbered tiles suit-major, then honors. -/
 def index : Tile → Fin 34

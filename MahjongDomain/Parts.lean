@@ -71,6 +71,22 @@ def MentsuCandidate.orderedTiles : MentsuCandidate → List Tile
 def MentsuCandidate.tiles (candidate : MentsuCandidate) : Multiset Tile :=
   Multiset.ofList candidate.orderedTiles
 
+theorem MentsuCandidate.orderedTiles_length (candidate : MentsuCandidate) :
+    candidate.orderedTiles.length = 3 := by
+  cases candidate with
+  | shuntsu sequence => cases sequence; rfl
+  | koutsu tile => rfl
+
+theorem MentsuCandidateList.flatMap_orderedTiles_length
+    (candidates : List MentsuCandidate) :
+    (candidates.flatMap MentsuCandidate.orderedTiles).length = candidates.length * 3 := by
+  induction candidates with
+  | nil => rfl
+  | cons first rest inductionHypothesis =>
+      simp only [List.flatMap_cons, List.length_append, List.length_cons]
+      rw [MentsuCandidate.orderedTiles_length, inductionHypothesis]
+      simp [Nat.add_mul, Nat.add_comm]
+
 /-- The tile-kind multiset occupied by a fixed kan; it is not a standard meld. -/
 def Kan.occupiedTiles (tile : Tile) : Multiset Tile :=
   Multiset.replicate 4 tile
@@ -83,6 +99,25 @@ def MentsuCandidateList.tiles : List MentsuCandidate → Multiset Tile
 /-- Tile-kind multiplicities of a tile multiset. -/
 def TileCounts.ofMultiset (tiles : Multiset Tile) : TileCounts :=
   fun tile => tiles.count tile
+
+/-- Tile-kind multiplicities of a tile list, independent of list order. -/
+def TileCounts.ofList (tiles : List Tile) : TileCounts :=
+  TileCounts.ofMultiset (Multiset.ofList tiles)
+
+theorem TileCounts.ofList_apply [BEq Tile] [LawfulBEq Tile]
+    (tiles : List Tile) (tile : Tile) :
+    TileCounts.ofList tiles tile = tiles.count tile := by
+  induction tiles with
+  | nil => rfl
+  | cons first rest inductionHypothesis =>
+      change (Multiset.ofList rest).count tile = rest.count tile at inductionHypothesis
+      change Multiset.count tile (first ::ₘ Multiset.ofList rest) = _
+      rw [Multiset.count_cons, List.count_cons, inductionHypothesis]
+      by_cases equal : tile = first
+      · subst first
+        simp
+      · have unequal : first ≠ tile := Ne.symm equal
+        simp [equal, unequal]
 
 /-- Tile-kind multiplicities contributed by an ordered candidate list. -/
 def MentsuCandidateList.counts (candidates : List MentsuCandidate) : TileCounts :=
@@ -142,6 +177,17 @@ theorem MentsuCandidateList.counts_cons (candidate : MentsuCandidate)
       fun tile => candidate.tiles.count tile + MentsuCandidateList.counts candidates tile := by
   funext tile
   simp [MentsuCandidateList.counts, MentsuCandidateList.tiles, Multiset.count_add]
+
+theorem MentsuCandidateList.counts_eq_list_count [BEq Tile] [LawfulBEq Tile]
+    (candidates : List MentsuCandidate) (tile : Tile) :
+    MentsuCandidateList.counts candidates tile =
+      (candidates.flatMap MentsuCandidate.orderedTiles).count tile := by
+  induction candidates with
+  | nil => rfl
+  | cons first rest inductionHypothesis =>
+      rw [MentsuCandidateList.counts_cons]
+      simp only [List.flatMap_cons, List.count_append, inductionHypothesis]
+      exact congrArg (· + _) (TileCounts.ofList_apply first.orderedTiles tile)
 
 theorem StandardDecomposition.counts_eq_parts
     (decomposition : StandardDecomposition) :

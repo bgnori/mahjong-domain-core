@@ -38,3 +38,12 @@ ascending rank. Their `tiles` multisets are obtained from those lists by
 
 各部品の`orderedTiles`は共有牌種の列であり、順子はランク昇順です。`tiles`は
 その列から`Multiset.ofList`で得ます。順子の各ランクは`ShuntsuStart`で得られます。
+
+`Tile.suitedTiles` constructs an ordered suited list; `Tile.mem_all` proves the
+shared enumeration is exhaustive. `TileCounts.ofList` counts a tile-kind list
+and `MentsuCandidateList.counts_eq_list_count` relates ordered meld expansion
+to its multiset counts.
+
+`Tile.suitedTiles`は順序付き数牌列を構成し、`Tile.mem_all`は牌種列挙の網羅性を示します。
+`TileCounts.ofList`は牌種列を数え、`MentsuCandidateList.counts_eq_list_count`は
+面子の順序付き展開と多重集合の計数を対応させます。
