@@ -1,6 +1,7 @@
 module
 
 public import MahjongDomain.Tile
+public meta import MahjongDomain.Tile
 public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 public import Mathlib.Data.Fintype.Basic
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
@@ -12,7 +13,7 @@ import Mathlib.Tactic.FinCases
 namespace MahjongDomain
 
 /-- A physical tile ID in the stable Tenhou 0-based ordering. -/
-abbrev PhysicalTileId := Fin 136
+abbrev PhysicalTileId := Fin (34 * copiesPerTile)
 
 /-- An aka37 slot; red fives have separate slots from ordinary fives. -/
 abbrev Int37Index := Fin 37
@@ -52,12 +53,12 @@ def Int37Index.tile : Int37Index → Tile
 def Int37Index.capacity (index : Int37Index) : Nat :=
   if index.val = 0 || index.val = 10 || index.val = 20 then 1
   else if index.val = 5 || index.val = 15 || index.val = 25 then 3
-  else 4
+  else copiesPerTile
 
 /-- Map a Tenhou physical tile ID to its aka37 slot. Copy zero of each five is red. -/
 def PhysicalTileId.int37Index (id : PhysicalTileId) : Int37Index :=
-  let kind := id.val / 4
-  let copy := id.val % 4
+  let kind := id.val / copiesPerTile
+  let copy := id.val % copiesPerTile
   let index :=
     if kind = 4 ∧ copy = 0 then 0
     else if kind = 13 ∧ copy = 0 then 10
@@ -66,7 +67,7 @@ def PhysicalTileId.int37Index (id : PhysicalTileId) : Int37Index :=
     else
       kind + 3
   ⟨index, by
-    have hkind : kind < 34 := by dsimp [kind]; omega
+    have hkind : kind < 34 := by dsimp [kind, copiesPerTile]; omega
     by_cases h0 : kind = 4 ∧ copy = 0
     · simp [index, h0]
     · by_cases h1 : kind = 13 ∧ copy = 0
@@ -87,8 +88,11 @@ def PhysicalTileId.tile (id : PhysicalTileId) : Tile :=
 
 /-- Map a Tenhou physical tile ID directly to its normalized Int34 index. -/
 def PhysicalTileId.int34Index (id : PhysicalTileId) : Int34Index :=
-  ⟨id.val / 4, by
-    have hkind : id.val / 4 < 34 := by omega
+  ⟨id.val / copiesPerTile, by
+    have hkind : id.val / 4 < 34 := by
+      have h := id.isLt
+      dsimp [PhysicalTileId, copiesPerTile] at h
+      omega
     exact hkind⟩
 
 /--
@@ -126,11 +130,11 @@ theorem Int37Index.tile_int37Index (tile : Tile) :
   | honor rank => fin_cases rank <;> decide
 
 theorem PhysicalTileId.tile_index (id : PhysicalTileId) :
-    id.tile.index.val = id.val / 4 := by
+    id.tile.index.val = id.val / copiesPerTile := by
   fin_cases id <;> decide
 
 theorem PhysicalTileId.int34Index_val (id : PhysicalTileId) :
-    id.int34Index.val = id.val / 4 := by
+    id.int34Index.val = id.val / copiesPerTile := by
   rfl
 
 theorem PhysicalTileId.int34Index_eq_int37Index (id : PhysicalTileId) :
@@ -155,7 +159,7 @@ theorem aggregateInt37_total (counts : Int37Counts) :
 
 set_option maxRecDepth 8192 in
 theorem aggregateInt37_capacity :
-    aggregateInt37 (fun index => (index.capacity : Int)) = fun _ => 4 := by
+    aggregateInt37 (fun index => (index.capacity : Int)) = fun _ => (copiesPerTile : Int) := by
   funext tile
   cases tile with
   | suited suit rank => cases suit <;> fin_cases rank <;> decide
@@ -163,7 +167,7 @@ theorem aggregateInt37_capacity :
 
 theorem aggregateInt37_le_four (counts : Int37Counts)
     (hcapacity : ∀ index, counts index ≤ (index.capacity : Int)) (tile : Tile) :
-    aggregateInt37 counts tile ≤ 4 := by
+    aggregateInt37 counts tile ≤ copiesPerTile := by
   rw [← congrFun aggregateInt37_capacity tile]
   unfold aggregateInt37
   apply Finset.sum_le_sum
@@ -177,6 +181,14 @@ theorem PhysicalTileId.int37_capacity_count (index : Int37Index) :
     (∑ id : PhysicalTileId, if id.int37Index = index then (1 : Nat) else 0) =
       index.capacity := by
   fin_cases index <;> decide
+
+set_option maxRecDepth 8192 in
+theorem PhysicalTileId.tile_capacity_count (tile : Tile) :
+    (∑ id : PhysicalTileId, if id.tile = tile then (1 : Nat) else 0) =
+      copiesPerTile := by
+  cases tile with
+  | suited suit rank => cases suit <;> fin_cases rank <;> decide
+  | honor rank => fin_cases rank <;> decide
 
 example :
     Int37Counts.ofTenhou

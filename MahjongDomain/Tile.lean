@@ -51,6 +51,38 @@ inductive Tile
 /-- Counts of normalized tile kinds. -/
 abbrev TileCounts := Tile → Nat
 
+/-- Each normalized tile kind has four physical copies. -/
+abbrev copiesPerTile : Nat := 4
+
+/-- Every tile-kind count is within the physical copy limit. -/
+abbrev TileCounts.Valid (counts : TileCounts) : Prop :=
+  ∀ tile, counts tile ≤ copiesPerTile
+
+/-- One more tile of this kind fits within the physical copy limit. -/
+abbrev TileCounts.CanAdd (counts : TileCounts) (tile : Tile) : Prop :=
+  counts tile < copiesPerTile
+
+theorem TileCounts.valid_add_one_iff (counts : TileCounts) (added : Tile) :
+    TileCounts.Valid (fun tile => counts tile + if tile = added then 1 else 0) ↔
+      counts.Valid ∧ counts.CanAdd added := by
+  constructor
+  · intro valid
+    constructor
+    · intro tile
+      have h := valid tile
+      dsimp only at h
+      split at h <;> omega
+    · have h := valid added
+      simp only [ite_true] at h
+      exact h
+  · rintro ⟨valid, canAdd⟩ tile
+    by_cases h : tile = added
+    · subst tile
+      simp only [ite_true]
+      exact canAdd
+    · simp only [h, ite_false, Nat.add_zero]
+      exact valid tile
+
 namespace Tile
 
 /-- Construct suited tile kinds from an ordered list of ranks. -/

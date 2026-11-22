@@ -90,7 +90,7 @@ theorem MentsuCandidateList.flatMap_orderedTiles_length
 
 /-- The tile-kind multiset occupied by a fixed kan; it is not a standard meld. -/
 def Kan.occupiedTiles (tile : Tile) : Multiset Tile :=
-  Multiset.replicate 4 tile
+  Multiset.replicate copiesPerTile tile
 
 /-- Expand an ordered candidate list without forgetting repeated equal candidates. -/
 def MentsuCandidateList.tiles : List MentsuCandidate → Multiset Tile
@@ -175,8 +175,21 @@ theorem TileCounts.ofMultiset_sum_eq_card (tiles : Multiset Tile) :
   | @cons tile tiles ih =>
       simp [TileCounts.ofMultiset, ih, Finset.sum_add_distrib]
 
+theorem TileCounts.ofList_sum_eq_length (tiles : List Tile) :
+    (∑ tile : Tile, TileCounts.ofList tiles tile) = tiles.length := by
+  simpa [TileCounts.ofList] using TileCounts.ofMultiset_sum_eq_card (Multiset.ofList tiles)
+
+theorem StandardCompletion.counts_total
+    (completion : StandardCompletion candidateCount counts) :
+    (∑ tile : Tile, counts tile) = 2 + 3 * candidateCount := by
+  obtain ⟨decomposition, hlength, hcounts⟩ := completion
+  rw [← hcounts]
+  unfold StandardDecomposition.counts StandardDecomposition.tiles
+  rw [TileCounts.ofMultiset_sum_eq_card, Multiset.card_add, Pair.tiles_card,
+    MentsuCandidateList.tiles_card, hlength]
+
 theorem Kan.occupiedTiles_card (tile : Tile) :
-    (Kan.occupiedTiles tile).card = 4 := by
+    (Kan.occupiedTiles tile).card = copiesPerTile := by
   simp [Kan.occupiedTiles]
 
 theorem Pair.counts_eq_pair_add_remaining (counts : TileCounts) (pair : Pair)

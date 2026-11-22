@@ -10,6 +10,7 @@ namespace MahjongDomain
 assert_no_sorry Tile.all_length
 assert_no_sorry Tile.mem_all
 assert_no_sorry Tile.index_injective
+assert_no_sorry TileCounts.valid_add_one_iff
 assert_no_sorry mem_orphanKinds
 assert_no_sorry orphanKinds_card
 assert_no_sorry orphanTiles_count
@@ -19,6 +20,7 @@ assert_no_sorry PhysicalTileId.tile_index
 assert_no_sorry PhysicalTileId.int34Index_val
 assert_no_sorry PhysicalTileId.int34Index_eq_int37Index
 assert_no_sorry PhysicalTileId.int37_capacity_count
+assert_no_sorry PhysicalTileId.tile_capacity_count
 assert_no_sorry aggregateInt37_add
 assert_no_sorry aggregateInt37_total
 assert_no_sorry aggregateInt37_capacity
@@ -28,6 +30,8 @@ assert_no_sorry Pair.tiles_card
 assert_no_sorry MentsuCandidate.tiles_card
 assert_no_sorry MentsuCandidateList.tiles_card
 assert_no_sorry TileCounts.ofMultiset_sum_eq_card
+assert_no_sorry TileCounts.ofList_sum_eq_length
+assert_no_sorry StandardCompletion.counts_total
 assert_no_sorry Kan.occupiedTiles_card
 assert_no_sorry Pair.counts_eq_pair_add_remaining
 assert_no_sorry MentsuCandidateList.counts_cons
@@ -69,6 +73,13 @@ example (tile : Tile) :
 
 example (tile : Tile) : TileCounts.ofList [tile, tile, tile, tile] tile = 4 := by
   simp [TileCounts.ofList, TileCounts.ofMultiset]
+
+example (tile : Tile) :
+    TileCounts.CanAdd (fun _ => 3) tile ∧
+      ¬ TileCounts.CanAdd (fun _ => 4) tile ∧
+      ¬ TileCounts.Valid (fun _ => 5) := by
+  letI : Nonempty Tile := ⟨tile⟩
+  simp [TileCounts.CanAdd, TileCounts.Valid]
 
 example : (∑ tile : Tile, TileCounts.ofMultiset 0 tile) = 0 := by
   rw [TileCounts.ofMultiset_sum_eq_card]
