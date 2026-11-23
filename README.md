@@ -34,10 +34,12 @@ their own code uses Mathlib APIs beyond the core's public interface.
 MATHLIB_NO_CACHE_ON_UPDATE=1 lake build
 ```
 
-The core defines `MahjongDomain.Tile` with a stable 34-kind index, bridges
-Tenhou's 136 physical IDs to Int37 and Int34 counts, and proves total, addition,
-and four-copy capacity preservation when aka37 counts are aggregated to
-normalized tile kinds. It also provides exact two-tile pairs, `Shuntsu` and
+The core defines `MahjongDomain.Tile` with a stable 34-kind index and provides
+Int37 and Int34 counts, including total, addition, and four-copy capacity
+preservation when aka37 counts are aggregated to normalized tile kinds.
+Tenhou's 136-code input format is isolated in the optional
+`MahjongDomain.Tenhou` adapter module, which decodes codes into those counts.
+The core also provides exact two-tile pairs, `Shuntsu` and
 `MentsuCandidate` standard-form shapes, separate fixed-kan occupancy, and
 standard-decomposition specifications that preserve component and tile-kind
 multiplicities. `MahjongDomain.Tile.format` renders normalized tiles as Unicode

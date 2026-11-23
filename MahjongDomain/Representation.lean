@@ -12,9 +12,6 @@ import Mathlib.Tactic.FinCases
 
 namespace MahjongDomain
 
-/-- A physical tile ID in the stable Tenhou 0-based ordering. -/
-abbrev PhysicalTileId := Fin (34 * copiesPerTile)
-
 /-- An aka37 slot; red fives have separate slots from ordinary fives. -/
 abbrev Int37Index := Fin 37
 
@@ -55,62 +52,6 @@ def Int37Index.capacity (index : Int37Index) : Nat :=
   else if index.val = 5 || index.val = 15 || index.val = 25 then 3
   else copiesPerTile
 
-/-- Map a Tenhou physical tile ID to its aka37 slot. Copy zero of each five is red. -/
-def PhysicalTileId.int37Index (id : PhysicalTileId) : Int37Index :=
-  let kind := id.val / copiesPerTile
-  let copy := id.val % copiesPerTile
-  let index :=
-    if kind = 4 ∧ copy = 0 then 0
-    else if kind = 13 ∧ copy = 0 then 10
-    else if kind = 22 ∧ copy = 0 then 20
-    else if kind < 27 then kind / 9 * 10 + kind % 9 + 1
-    else
-      kind + 3
-  ⟨index, by
-    have hkind : kind < 34 := by dsimp [kind, copiesPerTile]; omega
-    by_cases h0 : kind = 4 ∧ copy = 0
-    · simp [index, h0]
-    · by_cases h1 : kind = 13 ∧ copy = 0
-      · simp [index, h1]
-      · by_cases h2 : kind = 22 ∧ copy = 0
-        · simp [index, h2]
-        · by_cases hnumbered : kind < 27
-          · have hsuit : kind / 9 < 3 := by omega
-            have hrank : kind % 9 < 9 := Nat.mod_lt _ (by decide)
-            simp [index, h0, h1, h2, hnumbered]
-            omega
-          · simp [index, h0, h1, h2, hnumbered]
-            omega⟩
-
-/-- The normalized kind of a physical tile ID. -/
-def PhysicalTileId.tile (id : PhysicalTileId) : Tile :=
-  id.int37Index.tile
-
-/-- Map a Tenhou physical tile ID directly to its normalized Int34 index. -/
-def PhysicalTileId.int34Index (id : PhysicalTileId) : Int34Index :=
-  ⟨id.val / copiesPerTile, by
-    have hkind : id.val / 4 < 34 := by
-      have h := id.isLt
-      dsimp [PhysicalTileId, copiesPerTile] at h
-      omega
-    exact hkind⟩
-
-/--
-Convert valid Tenhou physical tile IDs to signed Int37 counts. Hand length and
-physical-ID uniqueness are caller responsibilities.
--/
-def Int37Counts.ofTenhou (ids : List PhysicalTileId) : Int37Counts :=
-  fun index =>
-    Int.ofNat (ids.countP fun id => decide (id.int37Index = index))
-
-/--
-Convert valid Tenhou physical tile IDs to signed Int34 counts. Hand length and
-physical-ID uniqueness are caller responsibilities.
--/
-def Int34Counts.ofTenhou (ids : List PhysicalTileId) : Int34Counts :=
-  fun index =>
-    Int.ofNat (ids.countP fun id => decide (id.int34Index = index))
-
 /-- Aggregate signed aka37 counts by normalized 34-kind tile. -/
 def aggregateInt37 (counts : Int37Counts) : Tile → Int :=
   fun tile => ∑ index : Int37Index, if tile = index.tile then counts index else 0
@@ -128,19 +69,6 @@ theorem Int37Index.tile_int37Index (tile : Tile) :
   cases tile with
   | suited suit rank => cases suit <;> fin_cases rank <;> decide
   | honor rank => fin_cases rank <;> decide
-
-theorem PhysicalTileId.tile_index (id : PhysicalTileId) :
-    id.tile.index.val = id.val / copiesPerTile := by
-  fin_cases id <;> decide
-
-theorem PhysicalTileId.int34Index_val (id : PhysicalTileId) :
-    id.int34Index.val = id.val / copiesPerTile := by
-  rfl
-
-theorem PhysicalTileId.int34Index_eq_int37Index (id : PhysicalTileId) :
-    id.int34Index = id.int37Index.tile.index := by
-  apply Fin.ext
-  exact (PhysicalTileId.tile_index id).symm
 
 theorem aggregateInt37_add (left right : Int37Counts) :
     aggregateInt37 (fun index => left index + right index) =
@@ -175,44 +103,5 @@ theorem aggregateInt37_le_four (counts : Int37Counts)
   split
   · exact hcapacity index
   · omega
-
-set_option maxRecDepth 8192 in
-theorem PhysicalTileId.int37_capacity_count (index : Int37Index) :
-    (∑ id : PhysicalTileId, if id.int37Index = index then (1 : Nat) else 0) =
-      index.capacity := by
-  fin_cases index <;> decide
-
-set_option maxRecDepth 8192 in
-theorem PhysicalTileId.tile_capacity_count (tile : Tile) :
-    (∑ id : PhysicalTileId, if id.tile = tile then (1 : Nat) else 0) =
-      copiesPerTile := by
-  cases tile with
-  | suited suit rank => cases suit <;> fin_cases rank <;> decide
-  | honor rank => fin_cases rank <;> decide
-
-example :
-    Int37Counts.ofTenhou
-        [⟨16, by decide⟩, ⟨17, by decide⟩, ⟨52, by decide⟩] ⟨0, by decide⟩ = 1 := by
-  native_decide
-
-example :
-    Int37Counts.ofTenhou
-        [⟨16, by decide⟩, ⟨17, by decide⟩, ⟨52, by decide⟩] ⟨5, by decide⟩ = 1 := by
-  native_decide
-
-example :
-    Int37Counts.ofTenhou
-        [⟨16, by decide⟩, ⟨17, by decide⟩, ⟨52, by decide⟩] ⟨10, by decide⟩ = 1 := by
-  native_decide
-
-example :
-    Int34Counts.ofTenhou
-        [⟨16, by decide⟩, ⟨17, by decide⟩, ⟨52, by decide⟩] ⟨4, by decide⟩ = 2 := by
-  native_decide
-
-example :
-    Int34Counts.ofTenhou
-        [⟨16, by decide⟩, ⟨17, by decide⟩, ⟨52, by decide⟩] ⟨13, by decide⟩ = 1 := by
-  native_decide
 
 end MahjongDomain

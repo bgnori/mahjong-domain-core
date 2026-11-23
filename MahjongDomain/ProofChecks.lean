@@ -1,6 +1,7 @@
 module
 
 import MahjongDomain.Representation
+import MahjongDomain.Tenhou
 import MahjongDomain.Parts
 import MahjongDomain.Orphans
 import Mathlib.Util.AssertNoSorry
@@ -16,11 +17,12 @@ assert_no_sorry orphanKinds_card
 assert_no_sorry orphanTiles_count
 assert_no_sorry orphanTiles_card
 assert_no_sorry Int37Index.tile_int37Index
-assert_no_sorry PhysicalTileId.tile_index
-assert_no_sorry PhysicalTileId.int34Index_val
-assert_no_sorry PhysicalTileId.int34Index_eq_int37Index
-assert_no_sorry PhysicalTileId.int37_capacity_count
-assert_no_sorry PhysicalTileId.tile_capacity_count
+assert_no_sorry TenhouId.tile_index
+assert_no_sorry TenhouId.int34Index_val
+assert_no_sorry TenhouId.int34Index_eq_int37Index
+assert_no_sorry TenhouId.int37_capacity_count
+assert_no_sorry TenhouId.tile_capacity_count
+assert_no_sorry TileCounts.ofTenhou_sum
 assert_no_sorry aggregateInt37_add
 assert_no_sorry aggregateInt37_total
 assert_no_sorry aggregateInt37_capacity
