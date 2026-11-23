@@ -11,7 +11,7 @@ import Mathlib.Tactic.DeriveFintype
 
 namespace MahjongDomain
 
-/-- A pair of identical tile kinds, used as the head of a standard hand. -/
+/-- A pair of identical tile kinds, used as the head of a mentsu hand. -/
 structure Pair where
   tile : Tile
   deriving DecidableEq
@@ -57,7 +57,7 @@ def Shuntsu.orderedTiles (shuntsu : Shuntsu) : List Tile :=
 def Shuntsu.tiles (shuntsu : Shuntsu) : Multiset Tile :=
   Multiset.ofList shuntsu.orderedTiles
 
-/-- A standard-form meld candidate: a suited sequence or a triplet. -/
+/-- A mentsu-hand meld candidate: a suited sequence or a triplet. -/
 inductive MentsuCandidate
   | shuntsu (shuntsu : Shuntsu)
   | koutsu (tile : Tile)
@@ -68,7 +68,7 @@ def MentsuCandidate.orderedTiles : MentsuCandidate → List Tile
   | .shuntsu sequence => sequence.orderedTiles
   | .koutsu tile => [tile, tile, tile]
 
-/-- The tile-kind multiset occupied by a standard-form meld candidate. -/
+/-- The tile-kind multiset occupied by a mentsu-hand meld candidate. -/
 def MentsuCandidate.tiles (candidate : MentsuCandidate) : Multiset Tile :=
   Multiset.ofList candidate.orderedTiles
 
@@ -88,7 +88,7 @@ theorem MentsuCandidateList.flatMap_orderedTiles_length
       rw [MentsuCandidate.orderedTiles_length, inductionHypothesis]
       simp [Nat.add_mul, Nat.add_comm]
 
-/-- The tile-kind multiset occupied by a fixed kan; it is not a standard meld. -/
+/-- The tile-kind multiset occupied by a fixed kan; it is not a mentsu candidate. -/
 def Kan.occupiedTiles (tile : Tile) : Multiset Tile :=
   Multiset.replicate copiesPerTile tile
 
@@ -128,25 +128,25 @@ def MentsuCandidateList.counts (candidates : List MentsuCandidate) : TileCounts 
 def Pair.remainingCounts (counts : TileCounts) (pair : Pair) : TileCounts :=
   fun tile => counts tile - pair.tiles.count tile
 
-/-- One standard decomposition, retaining the chosen pair and ordered candidate list. -/
-structure StandardDecomposition where
+/-- One mentsu-hand decomposition, retaining the chosen pair and ordered candidate list. -/
+structure MentsuHandDecomposition where
   pair : Pair
   mentsuCandidates : List MentsuCandidate
   deriving DecidableEq
 
-/-- The tile-kind multiset represented by one standard decomposition. -/
-def StandardDecomposition.tiles (decomposition : StandardDecomposition) :
+/-- The tile-kind multiset represented by one mentsu-hand decomposition. -/
+def MentsuHandDecomposition.tiles (decomposition : MentsuHandDecomposition) :
     Multiset Tile :=
   decomposition.pair.tiles + MentsuCandidateList.tiles decomposition.mentsuCandidates
 
-/-- The tile-kind multiplicities represented by one standard decomposition. -/
-def StandardDecomposition.counts (decomposition : StandardDecomposition) :
+/-- The tile-kind multiplicities represented by one mentsu-hand decomposition. -/
+def MentsuHandDecomposition.counts (decomposition : MentsuHandDecomposition) :
     TileCounts :=
   TileCounts.ofMultiset decomposition.tiles
 
 /-- A count vector has a witness consisting of one pair and exactly `candidateCount` candidates. -/
-def StandardCompletion (candidateCount : Nat) (counts : TileCounts) : Prop :=
-  ∃ decomposition : StandardDecomposition,
+def MentsuHandCompletion (candidateCount : Nat) (counts : TileCounts) : Prop :=
+  ∃ decomposition : MentsuHandDecomposition,
     decomposition.mentsuCandidates.length = candidateCount ∧ decomposition.counts = counts
 
 theorem Pair.tiles_card (pair : Pair) : pair.tiles.card = 2 := by
@@ -179,12 +179,12 @@ theorem TileCounts.ofList_sum_eq_length (tiles : List Tile) :
     (∑ tile : Tile, TileCounts.ofList tiles tile) = tiles.length := by
   simpa [TileCounts.ofList] using TileCounts.ofMultiset_sum_eq_card (Multiset.ofList tiles)
 
-theorem StandardCompletion.counts_total
-    (completion : StandardCompletion candidateCount counts) :
+theorem MentsuHandCompletion.counts_total
+    (completion : MentsuHandCompletion candidateCount counts) :
     (∑ tile : Tile, counts tile) = 2 + 3 * candidateCount := by
   obtain ⟨decomposition, hlength, hcounts⟩ := completion
   rw [← hcounts]
-  unfold StandardDecomposition.counts StandardDecomposition.tiles
+  unfold MentsuHandDecomposition.counts MentsuHandDecomposition.tiles
   rw [TileCounts.ofMultiset_sum_eq_card, Multiset.card_add, Pair.tiles_card,
     MentsuCandidateList.tiles_card, hlength]
 
@@ -220,17 +220,17 @@ theorem MentsuCandidateList.counts_eq_list_count [BEq Tile] [LawfulBEq Tile]
       simp only [List.flatMap_cons, List.count_append, inductionHypothesis]
       exact congrArg (· + _) (TileCounts.ofList_apply first.orderedTiles tile)
 
-theorem StandardDecomposition.counts_eq_parts
-    (decomposition : StandardDecomposition) :
+theorem MentsuHandDecomposition.counts_eq_parts
+    (decomposition : MentsuHandDecomposition) :
     decomposition.counts =
       fun tile => decomposition.pair.tiles.count tile +
         MentsuCandidateList.counts decomposition.mentsuCandidates tile := by
   funext tile
-  simp [StandardDecomposition.counts, StandardDecomposition.tiles,
+  simp [MentsuHandDecomposition.counts, MentsuHandDecomposition.tiles,
     TileCounts.ofMultiset, Multiset.count_add, MentsuCandidateList.counts]
 
-theorem standardCompletion_iff_parts (candidateCount : Nat) (counts : TileCounts) :
-    StandardCompletion candidateCount counts ↔
+theorem mentsuHandCompletion_iff_parts (candidateCount : Nat) (counts : TileCounts) :
+    MentsuHandCompletion candidateCount counts ↔
       ∃ pair : Pair, ∃ candidates : List MentsuCandidate,
         candidates.length = candidateCount ∧
         (fun tile => pair.tiles.count tile + MentsuCandidateList.counts candidates tile) = counts := by
@@ -240,7 +240,7 @@ theorem standardCompletion_iff_parts (candidateCount : Nat) (counts : TileCounts
       rw [← decomposition.counts_eq_parts, hcounts]⟩
   · rintro ⟨pair, candidates, hlength, hcounts⟩
     refine ⟨⟨pair, candidates⟩, hlength, ?_⟩
-    rw [StandardDecomposition.counts_eq_parts]
+    rw [MentsuHandDecomposition.counts_eq_parts]
     exact hcounts
 
 end MahjongDomain

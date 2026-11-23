@@ -33,7 +33,7 @@ assert_no_sorry MentsuCandidate.tiles_card
 assert_no_sorry MentsuCandidateList.tiles_card
 assert_no_sorry TileCounts.ofMultiset_sum_eq_card
 assert_no_sorry TileCounts.ofList_sum_eq_length
-assert_no_sorry StandardCompletion.counts_total
+assert_no_sorry MentsuHandCompletion.counts_total
 assert_no_sorry Kan.occupiedTiles_card
 assert_no_sorry Pair.counts_eq_pair_add_remaining
 assert_no_sorry MentsuCandidateList.counts_cons
@@ -41,8 +41,8 @@ assert_no_sorry TileCounts.ofList_apply
 assert_no_sorry MentsuCandidateList.counts_eq_list_count
 assert_no_sorry MentsuCandidate.orderedTiles_length
 assert_no_sorry MentsuCandidateList.flatMap_orderedTiles_length
-assert_no_sorry StandardDecomposition.counts_eq_parts
-assert_no_sorry standardCompletion_iff_parts
+assert_no_sorry MentsuHandDecomposition.counts_eq_parts
+assert_no_sorry mentsuHandCompletion_iff_parts
 
 example :
     (Shuntsu.orderedTiles ⟨.man, ⟨0, by decide⟩⟩) =
