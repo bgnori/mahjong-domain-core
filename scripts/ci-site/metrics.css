@@ -1,0 +1,8 @@
+body { font: 16px/1.5 system-ui, sans-serif; max-width: 1000px; margin: 2rem auto; padding: 0 1rem; }
+section { margin: 2rem 0; }
+svg { width: 100%; max-height: 260px; overflow: visible; }
+.line { fill: none; stroke: #3486d1; stroke-width: 2; }
+.point { fill: #3486d1; }
+table { border-collapse: collapse; width: 100%; font-size: .9rem; }
+th, td { padding: .4rem; border-bottom: 1px solid #8888; text-align: left; }
+.scroll { overflow-x: auto; }
