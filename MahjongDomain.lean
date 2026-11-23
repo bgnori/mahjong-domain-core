@@ -1,6 +1,7 @@
 module
 
 public import MahjongDomain.Tile
+public import MahjongDomain.Hand
 public import MahjongDomain.Representation
 public import MahjongDomain.Parts
 public import MahjongDomain.Orphans
