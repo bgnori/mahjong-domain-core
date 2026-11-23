@@ -69,5 +69,23 @@ jobs:
         run: |
           lake exe cache get $(find ${{ matrix.sources }} -name '*.lean' \
             -exec sed -n 's/^\(public \)\?import \(Mathlib\..*\)$/\2/p' {} + | sort -u)
+      - name: Test build sampler
+        if: matrix.package == 'mahjong-domain-core'
+        run: python3 -m unittest discover -s scripts -p 'test_measure_lean_build.py'
       - name: Build and check proofs
-        run: lake build ${{ matrix.targets }}
+        run: |
+          if [ "${{ matrix.package }}" = mahjong-domain-core ]; then
+            python3 scripts/measure_lean_build.py \
+              --output "$RUNNER_TEMP/lean-build-metrics.json" \
+              --module MahjongDomain/Hand.lean -- lake build ${{ matrix.targets }}
+          else
+            lake build ${{ matrix.targets }}
+          fi
+      - name: Save Lean build metrics
+        if: matrix.package == 'mahjong-domain-core' && github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: lean-build-metrics-v1
+          path: ${{ runner.temp }}/lean-build-metrics.json
+          if-no-files-found: error
+          overwrite: true
