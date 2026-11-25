@@ -46,7 +46,7 @@ end Honor
 inductive Tile
   | suited (suit : Suit) (rank : Rank)
   | honor (rank : Honor)
-  deriving DecidableEq, Repr, Inhabited
+  deriving DecidableEq, Repr
 
 /-- Counts of normalized tile kinds. -/
 abbrev TileCounts := Tile → Nat

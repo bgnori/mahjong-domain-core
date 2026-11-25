@@ -4,7 +4,6 @@ import MahjongDomain.Representation
 import MahjongDomain.Tenhou
 import MahjongDomain.Parts
 import MahjongDomain.Orphans
-import MahjongDomain.HandKey
 import Mathlib.Util.AssertNoSorry
 
 namespace MahjongDomain
@@ -44,12 +43,6 @@ assert_no_sorry MentsuCandidate.orderedTiles_length
 assert_no_sorry MentsuCandidateList.flatMap_orderedTiles_length
 assert_no_sorry MentsuHandDecomposition.counts_eq_parts
 assert_no_sorry mentsuHandCompletion_iff_parts
-assert_no_sorry MeldedHand.valid
-assert_no_sorry MeldedHand.encode
-assert_no_sorry MeldedHand.decode
-assert_no_sorry TileCollection.encode
-assert_no_sorry TileCollection.decode
-
 example :
     (Shuntsu.orderedTiles ⟨.man, ⟨0, by decide⟩⟩) =
       [.suited .man 0, .suited .man 1, .suited .man 2] ∧

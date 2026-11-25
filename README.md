@@ -41,11 +41,6 @@ preservation when aka37 counts are aggregated to normalized tile kinds.
 fixed melds and hand-shape constraints remain consumer-specific.
 Tenhou's 136-code input format is isolated in the optional
 `MahjongDomain.Tenhou` adapter module, which decodes codes into those counts.
-`MahjongDomain.HandKey` provides the initial reversible tile-collection and
-melded-hand key specifications. It uses stable `Tile.index` and fixed-meld
-ordering, rejects invalid counts and meld/hand combinations, and keeps separate
-`INT64`-compatible `Int` key spaces. Fixed-meld caller and kan-kind information
-is retained only in the melded-hand key.
 The core also provides exact two-tile pairs, `Shuntsu` and
 `MentsuCandidate` standard-form shapes, separate fixed-kan occupancy, and
 standard-decomposition specifications that preserve component and tile-kind
