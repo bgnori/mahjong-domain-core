@@ -132,6 +132,98 @@ theorem index_injective : Function.Injective index := by
 
 end Tile
 
+syntax "m1" : term
+syntax "m2" : term
+syntax "m3" : term
+syntax "m4" : term
+syntax "m5" : term
+syntax "m6" : term
+syntax "m7" : term
+syntax "m8" : term
+syntax "m9" : term
+syntax "p1" : term
+syntax "p2" : term
+syntax "p3" : term
+syntax "p4" : term
+syntax "p5" : term
+syntax "p6" : term
+syntax "p7" : term
+syntax "p8" : term
+syntax "p9" : term
+syntax "s1" : term
+syntax "s2" : term
+syntax "s3" : term
+syntax "s4" : term
+syntax "s5" : term
+syntax "s6" : term
+syntax "s7" : term
+syntax "s8" : term
+syntax "s9" : term
+syntax "z1" : term
+syntax "z2" : term
+syntax "z3" : term
+syntax "z4" : term
+syntax "z5" : term
+syntax "z6" : term
+syntax "z7" : term
+
+macro_rules
+  | `(m1) => `(Tile.suited Suit.man 0)
+  | `(m2) => `(Tile.suited Suit.man 1)
+  | `(m3) => `(Tile.suited Suit.man 2)
+  | `(m4) => `(Tile.suited Suit.man 3)
+  | `(m5) => `(Tile.suited Suit.man 4)
+  | `(m6) => `(Tile.suited Suit.man 5)
+  | `(m7) => `(Tile.suited Suit.man 6)
+  | `(m8) => `(Tile.suited Suit.man 7)
+  | `(m9) => `(Tile.suited Suit.man 8)
+  | `(p1) => `(Tile.suited Suit.pin 0)
+  | `(p2) => `(Tile.suited Suit.pin 1)
+  | `(p3) => `(Tile.suited Suit.pin 2)
+  | `(p4) => `(Tile.suited Suit.pin 3)
+  | `(p5) => `(Tile.suited Suit.pin 4)
+  | `(p6) => `(Tile.suited Suit.pin 5)
+  | `(p7) => `(Tile.suited Suit.pin 6)
+  | `(p8) => `(Tile.suited Suit.pin 7)
+  | `(p9) => `(Tile.suited Suit.pin 8)
+  | `(s1) => `(Tile.suited Suit.sou 0)
+  | `(s2) => `(Tile.suited Suit.sou 1)
+  | `(s3) => `(Tile.suited Suit.sou 2)
+  | `(s4) => `(Tile.suited Suit.sou 3)
+  | `(s5) => `(Tile.suited Suit.sou 4)
+  | `(s6) => `(Tile.suited Suit.sou 5)
+  | `(s7) => `(Tile.suited Suit.sou 6)
+  | `(s8) => `(Tile.suited Suit.sou 7)
+  | `(s9) => `(Tile.suited Suit.sou 8)
+  | `(z1) => `(Tile.honor 0)
+  | `(z2) => `(Tile.honor 1)
+  | `(z3) => `(Tile.honor 2)
+  | `(z4) => `(Tile.honor 3)
+  | `(z5) => `(Tile.honor 4)
+  | `(z6) => `(Tile.honor 5)
+  | `(z7) => `(Tile.honor 6)
+
+example :
+    [m1, m2, m3, m4, m5, m6, m7, m8, m9] =
+      Tile.suitedTiles .man [0, 1, 2, 3, 4, 5, 6, 7, 8] := by
+  decide
+
+example :
+    [p1, p2, p3, p4, p5, p6, p7, p8, p9] =
+      Tile.suitedTiles .pin [0, 1, 2, 3, 4, 5, 6, 7, 8] := by
+  decide
+
+example :
+    [s1, s2, s3, s4, s5, s6, s7, s8, s9] =
+      Tile.suitedTiles .sou [0, 1, 2, 3, 4, 5, 6, 7, 8] := by
+  decide
+
+example :
+    [z1, z2, z3, z4, z5, z6, z7] =
+      [Tile.honor 0, Tile.honor 1, Tile.honor 2, Tile.honor 3,
+        Tile.honor 4, Tile.honor 5, Tile.honor 6] := by
+  decide
+
 /-- A ready-to-use display format for a normalized tile kind. -/
 inductive TileFormat
   | unicode

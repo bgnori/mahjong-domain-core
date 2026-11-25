@@ -45,7 +45,10 @@ The core also provides exact two-tile pairs, `Shuntsu` and
 `MentsuCandidate` standard-form shapes, separate fixed-kan occupancy, and
 standard-decomposition specifications that preserve component and tile-kind
 multiplicities. `MahjongDomain.Tile.format` renders normalized tiles as Unicode
-glyphs or mpsz notation. See
+glyphs or mpsz notation. Tile terms can also be written directly in mpsz form:
+`m1` through `m9` for manzu, `p1` through `p9` for pinzu, `s1` through `s9`
+for souzu, and `z1` through `z7` for honors. For example, `[m1, m2, m3, z1]`
+is a `List Tile`. See
 [`docs/GLOSSARY.md`](docs/GLOSSARY.md) for the canonical terms and the scope
 of each representation.
 
