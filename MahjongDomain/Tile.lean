@@ -132,6 +132,7 @@ theorem index_injective : Function.Injective index := by
 
 end Tile
 
+syntax "m0" : term
 syntax "m1" : term
 syntax "m2" : term
 syntax "m3" : term
@@ -141,6 +142,7 @@ syntax "m6" : term
 syntax "m7" : term
 syntax "m8" : term
 syntax "m9" : term
+syntax "p0" : term
 syntax "p1" : term
 syntax "p2" : term
 syntax "p3" : term
@@ -150,6 +152,7 @@ syntax "p6" : term
 syntax "p7" : term
 syntax "p8" : term
 syntax "p9" : term
+syntax "s0" : term
 syntax "s1" : term
 syntax "s2" : term
 syntax "s3" : term
@@ -168,6 +171,7 @@ syntax "z6" : term
 syntax "z7" : term
 
 macro_rules
+  | `(m0) => `(Tile.suited Suit.man 4)
   | `(m1) => `(Tile.suited Suit.man 0)
   | `(m2) => `(Tile.suited Suit.man 1)
   | `(m3) => `(Tile.suited Suit.man 2)
@@ -177,6 +181,7 @@ macro_rules
   | `(m7) => `(Tile.suited Suit.man 6)
   | `(m8) => `(Tile.suited Suit.man 7)
   | `(m9) => `(Tile.suited Suit.man 8)
+  | `(p0) => `(Tile.suited Suit.pin 4)
   | `(p1) => `(Tile.suited Suit.pin 0)
   | `(p2) => `(Tile.suited Suit.pin 1)
   | `(p3) => `(Tile.suited Suit.pin 2)
@@ -186,6 +191,7 @@ macro_rules
   | `(p7) => `(Tile.suited Suit.pin 6)
   | `(p8) => `(Tile.suited Suit.pin 7)
   | `(p9) => `(Tile.suited Suit.pin 8)
+  | `(s0) => `(Tile.suited Suit.sou 4)
   | `(s1) => `(Tile.suited Suit.sou 0)
   | `(s2) => `(Tile.suited Suit.sou 1)
   | `(s3) => `(Tile.suited Suit.sou 2)
@@ -216,6 +222,9 @@ example :
 example :
     [s1, s2, s3, s4, s5, s6, s7, s8, s9] =
       Tile.suitedTiles .sou [0, 1, 2, 3, 4, 5, 6, 7, 8] := by
+  decide
+
+example : m0 = m5 ∧ p0 = p5 ∧ s0 = s5 := by
   decide
 
 example :
