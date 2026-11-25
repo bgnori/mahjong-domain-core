@@ -11,7 +11,7 @@ inductive Suit
   | man
   | pin
   | sou
-  deriving DecidableEq
+  deriving DecidableEq, Repr
 
 namespace Suit
 
@@ -46,7 +46,7 @@ end Honor
 inductive Tile
   | suited (suit : Suit) (rank : Rank)
   | honor (rank : Honor)
-  deriving DecidableEq
+  deriving DecidableEq, Repr, Inhabited
 
 /-- Counts of normalized tile kinds. -/
 abbrev TileCounts := Tile → Nat
