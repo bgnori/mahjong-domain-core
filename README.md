@@ -37,8 +37,11 @@ MATHLIB_NO_CACHE_ON_UPDATE=1 lake build
 The core defines `MahjongDomain.Tile` with a stable 34-kind index and provides
 Int37 and Int34 counts, including total, addition, and four-copy capacity
 preservation when aka37 counts are aggregated to normalized tile kinds.
-`MahjongDomain.Hand` provides the shared count-based hand-held tile component;
-fixed melds and hand-shape constraints remain consumer-specific.
+`MahjongDomain.Hand` provides the shared count-based hand-held tile component.
+`MahjongDomain.HandSnapshot` combines normalized standing counts with fixed
+melds including their call details. Fixed-meld list order is ignored by
+`HandSnapshot.Equivalent` and `HandSnapshot.same`; repeated melds are retained.
+The type itself does not validate hand size or physical tile capacity.
 Tenhou's 136-code input format is isolated in the optional
 `MahjongDomain.Tenhou` adapter module, which decodes codes into those counts.
 The core also provides exact two-tile pairs, `Shuntsu` and
