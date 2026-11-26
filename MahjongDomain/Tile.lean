@@ -1,6 +1,7 @@
 module
 
 public import MahjongDomain.Prelude
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 @[expose] public section
 
@@ -131,6 +132,14 @@ theorem index_injective : Function.Injective index := by
   decide
 
 end Tile
+
+/-- Total number of tiles represented by the counts. -/
+def TileCounts.total (counts : TileCounts) : Nat :=
+  ∑ tile : Tile, counts tile
+
+/-- Possible physical tile totals for a 13- or 14-tile-equivalent four-player hand. -/
+abbrev TileCounts.HasFullHandSize (counts : TileCounts) : Prop :=
+  13 ≤ counts.total ∧ counts.total ≤ 18
 
 syntax "m0" : term
 syntax "m1" : term
