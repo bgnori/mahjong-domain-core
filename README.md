@@ -34,28 +34,33 @@ their own code uses Mathlib APIs beyond the core's public interface.
 MATHLIB_NO_CACHE_ON_UPDATE=1 lake build
 ```
 
-The core defines `MahjongDomain.Tile` with a stable 34-kind index and provides
-Int37 and Int34 counts, including total, addition, and four-copy capacity
-preservation when aka37 counts are aggregated to normalized tile kinds.
+The core defines `MahjongDomain.Tile` as a normalized 34-kind tile shape and
+`MahjongDomain.Tile37` as the red-aware 37-kind tile identity. `Tile37Counts`
+preserves red-five counts, enforces the aka37 per-slot capacities, and projects
+to normalized counts while preserving the four-copy limit. Signed Int37 and
+Int34 counts remain available for input adapters.
 `MahjongDomain.Hand` provides the shared count-based hand-held tile component.
-`MahjongDomain.HandSnapshot` combines normalized standing counts with fixed
-melds including their call details. Fixed-meld list order is ignored by
-`HandSnapshot.Equivalent` and `HandSnapshot.same`; repeated melds are retained.
-The type itself does not validate hand size or physical tile capacity.
+`MahjongDomain.HandSnapshot` combines 37-kind standing counts with fixed meld
+shapes, call details, and exact 37-kind tile composition. `FixedMeld.withTiles`
+supports red fives in fixed melds; `FixedMeld.hasValidComposition` checks that
+the identity counts match the declared meld shape. Fixed-meld list order is
+ignored by `HandSnapshot.Equivalent` and `HandSnapshot.same`; repeated melds
+are retained. Construction does not validate hand size, meld composition, or
+combined physical capacity.
 Tenhou's 136-code input format is isolated in the optional
-`MahjongDomain.Tenhou` adapter module, which decodes codes into those counts.
+`MahjongDomain.Tenhou` adapter module, which can decode codes into red-aware
+`Tile37Counts` or normalized `TileCounts`.
 The core also provides exact two-tile pairs, `Shuntsu` and
 `MentsuCandidate` standard-form shapes, separate fixed-kan occupancy, and
 standard-decomposition specifications that preserve component and tile-kind
-multiplicities. `MahjongDomain.Tile.format` renders normalized tiles as Unicode
-glyphs or mpsz notation. Tile terms can also be written directly in mpsz form:
+multiplicities. `MahjongDomain.Tile.format` renders normalized tile kinds;
+`Tile37.format` renders red fives as `0m`, `0p`, or `0s` in mpsz notation.
+Tile terms can also be written directly in mpsz form:
 `m1` through `m9` for manzu, `p1` through `p9` for pinzu, `s1` through `s9`
 for souzu, and `z1` through `z7` for honors. For example, `[m1, m2, m3, z1]`
 is a `List Tile`. The `m0`, `p0`, and `s0` aliases denote their respective
-fives. Since `Tile` normalizes aka fives to the same tile kind as ordinary
-fives, these aliases equal `m5`, `p5`, and `s5`; use
-[`MahjongDomain/Representation.lean`](MahjongDomain/Representation.lean) when
-the red-five distinction must be retained. See
+normalized fives and equal `m5`, `p5`, and `s5`. Use `Tile37.akaFive` or
+`Tile37Counts` when the red-five distinction must be retained. See
 [`docs/GLOSSARY.md`](docs/GLOSSARY.md) for the canonical terms and the scope
 of each representation.
 

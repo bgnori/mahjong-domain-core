@@ -3,6 +3,7 @@ module
 import MahjongDomain.Representation
 import MahjongDomain.Tenhou
 import MahjongDomain.Parts
+import MahjongDomain.HandSnapshot
 import MahjongDomain.Orphans
 import Mathlib.Util.AssertNoSorry
 
@@ -11,6 +12,13 @@ namespace MahjongDomain
 assert_no_sorry Tile.all_length
 assert_no_sorry Tile.mem_all
 assert_no_sorry Tile.index_injective
+assert_no_sorry Tile37.all_length
+assert_no_sorry Tile37.index_ofIndex
+assert_no_sorry Tile37.ofIndex_index
+assert_no_sorry Tile37Counts.ofMultiset_sum_eq_card
+assert_no_sorry Tile37Counts.ofList_sum_eq_length
+assert_no_sorry Tile37Counts.normalized_le_four
+assert_no_sorry Tile37Counts.normalized_valid
 assert_no_sorry TileCounts.valid_add_one_iff
 assert_no_sorry mem_orphanKinds
 assert_no_sorry orphanKinds_card
@@ -22,6 +30,7 @@ assert_no_sorry TenhouId.int34Index_val
 assert_no_sorry TenhouId.int34Index_eq_int37Index
 assert_no_sorry TenhouId.int37_capacity_count
 assert_no_sorry TenhouId.tile_capacity_count
+assert_no_sorry Tile37Counts.ofTenhou_sum
 assert_no_sorry TileCounts.ofTenhou_sum
 assert_no_sorry aggregateInt37_add
 assert_no_sorry aggregateInt37_total
@@ -92,5 +101,59 @@ example (candidate : MentsuCandidate) :
   rfl
 
 example : (MentsuCandidateList.tiles []).card = 0 := rfl
+
+example :
+    Tile37.normalized (.akaFive .man) = Tile.suited .man 4 ∧
+      Tile37.ofIndex ⟨0, by decide⟩ = .akaFive .man ∧
+      Tile37.ofIndex ⟨5, by decide⟩ = .normal (Tile.suited .man 4) := by
+  decide
+
+example :
+    let counts := Tile37Counts.ofList
+      [ .normal (Tile.suited .man 4)
+      , .normal (Tile.suited .man 4)
+      , .normal (Tile.suited .man 4)
+      , .akaFive .man ]
+    counts.Valid ∧ counts.normalized (Tile.suited .man 4) = 4 := by
+  decide
+
+example : Tile37.format .mpsz (.akaFive .man) = "0m" := by
+  decide
+
+def redFiveSnapshot : HandSnapshot :=
+  { standing := Tile37Counts.ofList [.akaFive .man], fixedMelds := [] }
+
+def ordinaryFiveSnapshot : HandSnapshot :=
+  { standing := Tile37Counts.ofList [.normal (Tile.suited .man 4)], fixedMelds := [] }
+
+example : HandSnapshot.same redFiveSnapshot ordinaryFiveSnapshot = false := by
+  decide
+
+def redChi : FixedMeld :=
+  FixedMeld.chiWithTiles
+    ⟨.man, ⟨2, by decide⟩⟩
+    ⟨2, by decide⟩
+    (Multiset.ofList
+      [ .normal (Tile.suited .man 2)
+      , .normal (Tile.suited .man 3)
+      , .akaFive .man ])
+
+example :
+    redChi.hasValidComposition = true ∧
+      redChi.occupiedCounts (.akaFive .man) = 1 ∧
+      redChi.occupiedCounts (.normal (Tile.suited .man 4)) = 0 := by
+  decide
+
+def ordinaryChi : FixedMeld :=
+  FixedMeld.chi ⟨.man, ⟨2, by decide⟩⟩ ⟨2, by decide⟩
+
+def redMeldSnapshot : HandSnapshot :=
+  { standing := fun _ => 0, fixedMelds := [redChi] }
+
+def ordinaryMeldSnapshot : HandSnapshot :=
+  { standing := fun _ => 0, fixedMelds := [ordinaryChi] }
+
+example : HandSnapshot.same redMeldSnapshot ordinaryMeldSnapshot = false := by
+  decide
 
 end MahjongDomain

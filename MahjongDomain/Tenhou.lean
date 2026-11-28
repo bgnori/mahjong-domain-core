@@ -2,6 +2,7 @@ module
 
 public import MahjongDomain.Representation
 public import MahjongDomain.Parts
+public import MahjongDomain.Tile37
 import Mathlib.Tactic.FinCases
 
 /-!
@@ -61,6 +62,10 @@ def int37Index (id : TenhouId) : Int37Index :=
 /-- The normalized tile kind represented by a Tenhou tile code. -/
 def tile (id : TenhouId) : Tile :=
   id.int37Index.tile
+
+/-- Map a Tenhou tile code to its red-aware 37-kind identity. -/
+def tile37 (id : TenhouId) : Tile37 :=
+  Tile37.ofIndex id.int37Index
 
 /-- Map a Tenhou tile code directly to its normalized Int34 index. -/
 def int34Index (id : TenhouId) : Int34Index :=
@@ -134,6 +139,24 @@ def decodeTenhou (values : List Nat) : Except TenhouDecodeError Int34Counts := d
 
 end Int34Counts
 
+namespace Tile37Counts
+
+/-- Convert distinct Tenhou tile codes to red-aware 37-kind counts. -/
+def ofTenhou (ids : List TenhouId) : Tile37Counts :=
+  Tile37Counts.ofList (ids.map TenhouId.tile37)
+
+theorem ofTenhou_sum (ids : List TenhouId) :
+    (∑ tile : Tile37, ofTenhou ids tile) = ids.length := by
+  simpa [ofTenhou] using
+    Tile37Counts.ofList_sum_eq_length (ids.map TenhouId.tile37)
+
+/-- Decode distinct raw Tenhou codes and preserve red-five identity. -/
+def decodeTenhou (values : List Nat) : Except TenhouDecodeError Tile37Counts := do
+  let ids ← decodeTenhouIds values
+  pure (ofTenhou ids)
+
+end Tile37Counts
+
 namespace TileCounts
 
 /-- Convert distinct Tenhou tile codes to normalized natural tile-kind counts. -/
@@ -171,6 +194,18 @@ example :
         (fun counts =>
           (counts ⟨0, by decide⟩, counts ⟨5, by decide⟩,
             counts ⟨10, by decide⟩, counts ⟨15, by decide⟩)) =
+      .ok (1, 1, 1, 1) := by
+  rfl
+
+example :
+    (TenhouId.decode 16).map TenhouId.tile37 = .ok (.akaFive .man) := by
+  rfl
+
+example :
+    (Tile37Counts.decodeTenhou [16, 17, 52, 53]).map
+        (fun counts =>
+          (counts (.akaFive .man), counts (.normal (.suited .man 4)),
+            counts (.akaFive .pin), counts (.normal (.suited .pin 4)))) =
       .ok (1, 1, 1, 1) := by
   rfl
 
